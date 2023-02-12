@@ -1,6 +1,7 @@
 import React, { Component, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { HashRouter as Router, Link, NavLink, Route, Switch, useLocation } from 'react-router-dom';
+import { getToken } from 'src/common/utils/FetchUtils';
 import AppErrorBoundary from '../../common/components/error-boundaries/AppErrorBoundary';
 import { HomePageDocsUrl, Version } from '../../common/constants';
 import logo from '../../common/static/home-logo.png';
@@ -46,9 +47,12 @@ const InteractionTracker = ({ children }) => children;
 const useTokenHandler = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
+
   useEffect(() => {
-    localStorage.setItem('auth_token', searchParams.get('token'));
-  }, [location.search]);
+    const token = searchParams.get('token');
+    if(token) 
+      localStorage.setItem('auth_token', JSON.stringify({date: Date.now(), value: token}));
+    }, [location.search]);
 }
 
 const App = () => {
