@@ -7,7 +7,17 @@ module.exports = function(app) {
   // Exception: If the caller has specified an MLFLOW_PROXY, we instead forward server requests
   // there.
   const proxyTarget = process.env.MLFLOW_PROXY || 'http://localhost:5000/';
+  const iamTarget = process.env.IAM_PROXY || 'http://localhost:5002/';
   const proxyStaticTarget = process.env.MLFLOW_STATIC_PROXY || proxyTarget;
+  app.use(
+    createProxyMiddleware('/iam-api', {
+      target: iamTarget,
+      changeOrigin: true,
+      pathRewrite: {
+        '^/iam-api': '/',
+      },
+    }),
+  );
   app.use(
     createProxyMiddleware('/ajax-api', {
       target: proxyTarget,
@@ -16,6 +26,13 @@ module.exports = function(app) {
   );
   app.use(
     createProxyMiddleware('/get-artifact', {
+      target: proxyStaticTarget,
+      ws: true,
+      changeOrigin: true,
+    }),
+  );
+  app.use(
+    createProxyMiddleware('/model-versions/get-artifact', {
       target: proxyStaticTarget,
       ws: true,
       changeOrigin: true,
