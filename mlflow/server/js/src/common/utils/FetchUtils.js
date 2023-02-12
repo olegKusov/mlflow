@@ -45,10 +45,13 @@ export const getDefaultHeaders = (cookieStr) => {
 };
 
 export const getAjaxUrl = (relativeUrl) => {
-  if (process.env.USE_ABSOLUTE_AJAX_URLS === 'true' && !relativeUrl.startsWith('/')) {
-    return '/' + relativeUrl;
-  }
-  return relativeUrl;
+  const prod = process.env.NODE_ENV === 'production';
+  const host = prod ? process.env.BACKEND_HOST: '';
+    if (process.env.USE_ABSOLUTE_AJAX_URLS === 'true' && !relativeUrl.startsWith('/')) {
+      return `${host}/${relativeUrl}`
+    }
+    return `${host}${relativeUrl}`
+
 };
 
 // return response json by default, if response is not parsable to json,
@@ -101,6 +104,7 @@ export const fetchEndpointRaw = ({
   timeoutMs = undefined,
 }) => {
   const url = getAjaxUrl(relativeUrl);
+  console.log(getAjaxUrl(relativeUrl));
 
   // if custom headers has duplicate fields with default Headers,
   // values in the custom headers options will always override.
@@ -192,7 +196,7 @@ export const getToken = () => {
   return new Promise((resolve, reject) => retry(
       () => {
         return fetchEndpointRaw({
-          relativeUrl: `/iam-api/get_token`,
+          relativeUrl: `iam-api/get_token`,
           method: 'GET',
         });
       },
@@ -200,10 +204,8 @@ export const getToken = () => {
          retries: 2,
          interval: 2,
          retryIntervalMultiplier: 2,
-         // 200s
-         successCondition: (res) => res && res.ok && res.status !== AUTH_ERROR_CODE,
+         successCondition: (res) => res && res.ok,
          success: ({ res }) => defaultResponseParser({ resolve, reject, response: res }),
-         // not a 200 and also not a retryable HTTP status code
          errorCondition: (res) => !res,
          error: ({ res, err }) => defaultError({ resolve, reject, response: res, err: err }),
        },
