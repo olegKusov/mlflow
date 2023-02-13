@@ -195,7 +195,7 @@ export const retry = async (
 
 const AUTH_ERROR_CODE = 403;
 
-const getTokenUrl = () => process.env.NODE_ENV === 'production' ? `https://${process.env.IAM_HOST}/iam-api/get_token` : '/iam-api/get_token';
+const getTokenUrl = () => process.env.NODE_ENV === 'production' ? `${process.env.IAM_HOST}/iam-api/get_token` : '/iam-api/get_token';
 
 export const getToken = () => {
   return new Promise((resolve, reject) => retry(
