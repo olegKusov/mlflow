@@ -38,11 +38,4 @@ module.exports = function(app) {
       changeOrigin: true,
     }),
   );
-  app.use(
-    createProxyMiddleware('/user-service/v1/entities-mapping/v1/model-versions/get-artifact', {
-      target: proxyStaticTarget,
-      ws: true,
-      changeOrigin: true,
-    }),
-  );
 };
