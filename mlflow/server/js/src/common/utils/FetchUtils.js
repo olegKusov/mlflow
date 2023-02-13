@@ -44,13 +44,17 @@ export const getDefaultHeaders = (cookieStr) => {
   };
 };
 
-export const getAjaxUrl = (relativeUrl) => {
+export const getAjaxUrl = (url) => {
+  if(url.startsWith('http') || url.startsWith('https')) {
+    return url;
+  }
+
   const prod = process.env.NODE_ENV === 'production';
   const host = prod ? process.env.BACKEND_HOST: '';
-    if (process.env.USE_ABSOLUTE_AJAX_URLS === 'true' && !relativeUrl.startsWith('/')) {
-      return `${host}/${relativeUrl}`
+    if (!url.startsWith('/')) {
+      return `${host}/user-service/v1/entities-mapping/v1/${url}`
     }
-    return `${host}${relativeUrl}`
+    return `${host}/user-service/v1/entities-mapping/v1${url}`
 
 };
 
@@ -104,7 +108,6 @@ export const fetchEndpointRaw = ({
   timeoutMs = undefined,
 }) => {
   const url = getAjaxUrl(relativeUrl);
-  console.log(getAjaxUrl(relativeUrl));
 
   // if custom headers has duplicate fields with default Headers,
   // values in the custom headers options will always override.
@@ -192,11 +195,13 @@ export const retry = async (
 
 const AUTH_ERROR_CODE = 403;
 
+const getTokenUrl = () => process.env.NODE_ENV === 'production' ? `https://${process.env.IAM_HOST}/iam-api/get_token` : '/iam-api/get_token';
+
 export const getToken = () => {
   return new Promise((resolve, reject) => retry(
       () => {
         return fetchEndpointRaw({
-          relativeUrl: `iam-api/get_token`,
+          relativeUrl: getTokenUrl(),
           method: 'GET',
         });
       },

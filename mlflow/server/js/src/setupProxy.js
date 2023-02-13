@@ -10,36 +10,36 @@ module.exports = function(app) {
   const iamTarget = process.env.IAM_PROXY || 'http://localhost:5002/';
   const proxyStaticTarget = process.env.MLFLOW_STATIC_PROXY || proxyTarget;
   app.use(
-    createProxyMiddleware('/iam-api', {
+    createProxyMiddleware('/user-service/v1/entities-mapping/v1/iam-api', {
       target: iamTarget,
       changeOrigin: true,
       pathRewrite: {
-        '^/iam-api': '/',
+        '^/user-service/v1/entities-mapping/v1/iam-api': '/',
       },
     }),
   );
   app.use(
-    createProxyMiddleware('/ajax-api', {
+    createProxyMiddleware('/user-service/v1/entities-mapping/v1/ajax-api', {
       target: proxyTarget,
       changeOrigin: true,
     }),
   );
   app.use(
-    createProxyMiddleware('/get-artifact', {
+    createProxyMiddleware('/user-service/v1/entities-mapping/v1/get-artifact', {
       target: proxyStaticTarget,
       ws: true,
       changeOrigin: true,
     }),
   );
   app.use(
-    createProxyMiddleware('/model-versions/get-artifact', {
+    createProxyMiddleware('/user-service/v1/entities-mapping/v1/model-versions/get-artifact', {
       target: proxyStaticTarget,
       ws: true,
       changeOrigin: true,
     }),
   );
   app.use(
-    createProxyMiddleware('/model-versions/get-artifact', {
+    createProxyMiddleware('/user-service/v1/entities-mapping/v1/model-versions/get-artifact', {
       target: proxyStaticTarget,
       ws: true,
       changeOrigin: true,
